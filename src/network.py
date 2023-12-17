@@ -79,3 +79,25 @@ class Network:
 
             err /= samples
             print('epoch %d/%d   error=%f' % (i + 1, epochs, err))
+
+    def fit_mnist_cnn(self, x_train, y_train, epochs=1000, learning_rate=0.1):
+        samples = len(x_train)
+
+        for i in range(epochs):
+            err = 0
+            for j in range(samples):
+                output = x_train[j]
+
+                for layer in self._layers:
+                    output = layer.forward_propagation(output)
+
+                y_true = Matrix.to_matrix(y_train.get_row(j))
+                y_pred = output
+                err = err + self._loss(y_true, y_pred)
+
+                grad = self._loss_prime(y_true, y_pred)
+                for layer in reversed(self._layers):
+                    grad = layer.backward_propagation(grad, learning_rate)
+
+            err /= samples
+            print('epoch %d/%d   error=%f' % (i + 1, epochs, err))
